@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AuraLens Advanced - Enterprise AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #00ffff;
+            --secondary: #00ff88;
+            --accent: #0099ff;
+            --danger: #ff0066;
+            --warning: #ffa500;
+            --success: #00ff88;
+            --bg-dark: #000000;
+            --glass-bg: rgba(0, 40, 80, 0.3);
+            --glow: rgba(0, 255, 255, 0.5);
+        }
+        
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: linear-gradient(135deg, #000000 0%, #0a1428 50%, #0f1535 100%);
+            color: var(--primary);
+            overflow: hidden;
+            height: 100vh;
+        }
+        
+        .bg-grid {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 30s linear infinite;
+            z-index: -1;
+        }
+        
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        
+        .animated-bg {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.1;
+        }
+        
+        .orb1 {
+            width: 300px;
+            height: 300px;
+            background: var(--primary);
+            top: 20%;
+            left: 10%;
+            animation: float 20s infinite;
+        }
+        
+        .orb2 {
+            width: 250px;
+            height: 250px;
+            background: var(--secondary);
+            top: 60%;
+            right: 10%;
+            animation: float 25s infinite reverse;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(30px, 30px); }
+        }
+        
+        .boot-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #000000, #0a1428);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+        
+        .boot-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .boot-logo {
+            font-family: 'Orbitron', monospace;
+            font-size: 5em;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 40px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { filter: drop-shadow(0 0 20px var(--glow)); }
+            50% { filter: drop-shadow(0 0 60px var(--glow)); }
+        }
+        
+        .boot-text {
+            color: var(--primary);
+            font-size: 1.1em;
+            margin: 15px;
+            opacity: 0;
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        .boot-text:nth-child(2) { animation-delay: 0.3s; }
+        .boot-text:nth-child(3) { animation-delay: 0.6s; }
+        .boot-text:nth-child(4) { animation-delay: 0.9s; }
+        
+        @keyframes fadeIn { to { opacity: 1; } }
+        
+        .main-container {
+            display: grid;
+            grid-template-columns: 350px 1fr 350px;
+            grid-template-rows: auto 1fr;
+            gap: 15px;
+            padding: 15px;
+            height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, rgba(0,255,255,0.1), rgba(0,255,136,0.05));
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 25px 35px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px rgba(0, 255, 255, 0.1);
+        }
+        
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .logo {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.2em;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .version-badge {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid var(--secondary);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            color: var(--secondary);
+            font-weight: 600;
+        }
+        
+        .header-info {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            background: var(--secondary);
+            border-radius: 50%;
+            animation: blink 1.5s infinite;
+            box-shadow: 0 0 10px var(--secondary);
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        .glass-panel {
+            background: linear-gradient(135deg, rgba(0,40,80,0.4), rgba(0,20,40,0.2));
+            border: 1px solid rgba(0, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 25px;
+            overflow-y: auto;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .panel-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.3em;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 20px;
+            border-bottom: 2px solid rgba(0, 255, 255, 0.3);
+            padding-bottom: 12px;
+            letter-spacing: 1px;
+        }
+        
+        .left-panel { grid-column: 1; grid-row: 2; }
+        .center-panel { grid-column: 2; grid-row: 2; display: flex; flex-direction: column; }
+        .right-panel { grid-column: 3; grid-row: 2; }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .message {
+            padding: 14px 18px;
+            border-radius: 12px;
+            animation: slideIn 0.3s ease;
+            line-height: 1.6;
+            max-width: 95%;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .message.user {
+            background: linear-gradient(135deg, rgba(0,150,255,0.25), rgba(0,100,200,0.15));
+            border: 1px solid rgba(0, 150, 255, 0.3);
+            border-left: 4px solid var(--accent);
+            margin-left: auto;
+            text-align: right;
+        }
+        
+        .message.ai {
+            background: linear-gradient(135deg, rgba(0,255,136,0.15), rgba(0,200,150,0.1));
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-left: 4px solid var(--secondary);
+        }
+        
+        .input-area {
+            display: flex;
+            gap: 12px;
+            background: linear-gradient(180deg, rgba(0, 40, 100, 0.35), rgba(0, 30, 80, 0.2));
+            padding: 18px;
+            border-top: 1px solid rgba(0, 255, 100, 0.2);
+            border-radius: 0 0 15px 15px;
+            margin: -25px -25px -25px -25px;
+            padding: 18px;
+        }
+        
+        .input-field {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid rgba(0, 255, 100, 0.2);
+            border-radius: 10px;
+            padding: 14px 18px;
+            color: var(--primary);
+            font-family: 'Rajdhani', sans-serif;
+            outline: none;
+            transition: all 0.3s;
+            font-size: 1em;
+        }
+        
+        .input-field:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(0, 255, 100, 0.25);
+            background: rgba(0, 0, 0, 0.8);
+        }
+        
+        .btn {
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #00ffff, #0099ff);
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Rajdhani', sans-serif;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-size: 0.9em;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.4);
+        }
+        
+        .stat-row {
+            padding: 12px 15px;
+            margin: 10px 0;
+            background: linear-gradient(135deg, rgba(0, 100, 200, 0.2), rgba(0, 50, 150, 0.1));
+            border-left: 4px solid var(--secondary);
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .stat-row:hover {
+            background: linear-gradient(135deg, rgba(0, 150, 255, 0.3), rgba(0, 100, 200, 0.2));
+            transform: translateX(5px);
+        }
+        
+        .stat-label {
+            font-weight: 600;
+            color: rgba(232, 232, 232, 0.9);
+            font-size: 0.95em;
+        }
+        
+        .stat-value {
+            font-weight: 700;
+            color: #ffff00;
+            font-family: 'Orbitron', monospace;
+            font-size: 1.05em;
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background: rgba(0, 255, 255, 0.15);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            transition: width 0.5s ease;
+            border-radius: 3px;
+            box-shadow: 0 0 10px var(--glow);
+        }
+        
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0,255,255,0.3), transparent);
+            margin: 20px 0;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            background: rgba(0, 255, 136, 0.15);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 15px;
+            font-size: 0.75em;
+            color: var(--secondary);
+            font-weight: 600;
+            margin: 5px 5px 5px 0;
+        }
+        
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 255, 100, 0.5);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 255, 100, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="animated-bg">
+        <div class="orb orb1"></div>
+        <div class="orb orb2"></div>
+    </div>
+    
+    <div class="boot-screen" id="bootScreen">
+        <div class="boot-logo">🎙️ AuraLens</div>
+        <div class="boot-text">Initializing Advanced AI Systems...</div>
+        <div class="boot-text">Loading Machine Learning Analytics...</div>
+        <div class="boot-text">Enabling Threat Detection Engine...</div>
+        <div class="boot-text">Establishing Secure Connection...</div>
+    </div>
+    
+    <div class="main-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo-section">
+                <div>
+                    <div class="logo">🎙️ AuraLens</div>
+                    <div style="font-size: 0.8em; color: var(--secondary); letter-spacing: 2px;">ENTERPRISE AI SYSTEM</div>
+                </div>
+            </div>
+            <div style="display: flex; gap: 30px; align-items: center;">
+                <div class="version-badge">Advanced v2.0</div>
+                <div class="header-info">
+                    <div class="status-indicator">
+                        <div class="status-dot"></div>
+                        <span id="status">ONLINE</span>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 0.85em; color: rgba(232,232,232,0.7);">System Time</div>
+                        <div style="font-weight: 700;" id="clock">00:00:00</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Left Panel -->
+        <div class="glass-panel left-panel">
+            <div class="panel-title">📊 System Analytics</div>
+            <div class="stat-row">
+                <span class="stat-label">CPU Usage</span>
+                <span class="stat-value" id="cpuValue">0%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="cpuBar" style="width: 0%"></div>
+            </div>
+            
+            <div class="stat-row">
+                <span class="stat-label">Memory</span>
+                <span class="stat-value" id="memValue">0%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="memBar" style="width: 0%"></div>
+            </div>
+            
+            <div class="stat-row">
+                <span class="stat-label">Disk Space</span>
+                <span class="stat-value" id="diskValue">0%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="diskBar" style="width: 0%"></div>
+            </div>
+            
+            <div class="section-divider"></div>
+            
+            <div class="panel-title" style="font-size: 1.1em; margin-top: 10px;">📈 Session Stats</div>
+            <div class="stat-row">
+                <span class="stat-label">Commands Sent</span>
+                <span class="stat-value" id="cmdCount">0</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Fact-Checks</span>
+                <span class="stat-value" id="factCount">0</span>
+            </div>
+            
+            <div class="section-divider"></div>
+            
+            <div class="panel-title" style="font-size: 1em;">🎯 Quick Commands</div>
+            <div style="font-size: 0.85em; line-height: 1.8; color: rgba(232,232,232,0.8);">
+                <strong style="color: var(--secondary);">Verification:</strong><br>
+                • verify [claim]<br>
+                • check [fact]<br><br>
+                
+                <strong style="color: var(--primary);">Information:</strong><br>
+                • time / weather<br>
+                • calculate 2+2<br><br>
+                
+                <strong style="color: var(--accent);">Advanced:</strong><br>
+                • analytics<br>
+                • system status
+            </div>
+        </div>
+        
+        <!-- Center Panel -->
+        <div class="glass-panel center-panel">
+            <div class="panel-title">💬 Advanced Chat Assistant</div>
+            <div class="chat-messages" id="messages">
+                <div class="message ai">
+                    <strong>AuraLens Advanced:</strong> Enterprise AI system online. Advanced threat detection, entity recognition, and real-time analytics enabled. Ready for complex analysis!
+                </div>
+            </div>
+            <div class="input-area">
+                <input type="text" class="input-field" id="input" placeholder="Ask anything, verify claims, or request analysis..." onkeypress="handleKeypress(event)">
+                <button class="btn" onclick="sendMessage()">Analyze</button>
+            </div>
+        </div>
+        
+        <!-- Right Panel -->
+        <div class="glass-panel right-panel">
+            <div class="panel-title">🛡️ Advanced Features</div>
+            <div style="font-size: 0.9em; line-height: 1.8; color: rgba(232, 232, 232, 0.85);">
+                <p><strong style="color: var(--secondary);">✨ Intelligent Analysis:</strong></p>
+                <p>• Machine Learning-like scoring<br>
+                • Entity recognition & linking<br>
+                • Threat pattern detection<br>
+                • Confidence level assessment</p>
+                
+                <p style="margin-top: 15px;"><strong style="color: var(--primary);">🔍 Detection Capabilities:</strong></p>
+                <p>• Emotional manipulation<br>
+                • Conspiracy language<br>
+                • Fake urgency tactics<br>
+                • Authority abuse patterns</p>
+                
+                <p style="margin-top: 15px;"><strong style="color: var(--accent);">📊 Analytics:</strong></p>
+                <p>• Real-time performance metrics<br>
+                • Command frequency tracking<br>
+                • Session statistics<br>
+                • System health monitoring</p>
+                
+                <div style="margin-top: 20px; padding: 12px; background: rgba(0,255,136,0.1); border-radius: 8px; border-left: 3px solid var(--secondary);">
+                    <strong style="color: var(--secondary); font-size: 0.9em;">💡 Pro Tip:</strong><br>
+                    <span style="font-size: 0.8em;">Use "verify [claim]" for advanced threat analysis and credibility scoring</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_URL = 'http://127.0.0.1:8090'; // change from 8080 to 8090
+        let cmdCount = 0;
+        let factCount = 0;
+        
+        setTimeout(() => {
+            document.getElementById('bootScreen').classList.add('hidden');
+        }, 3500);
+        
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').textContent = now.toLocaleTimeString();
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+        
+        function updateStats() {
+            fetch(`${API_URL}/api/stats`)
+                .then(r => r.json())
+                .then(data => {
+                    document.getElementById('cpuValue').textContent = `${data.cpu}%`;
+                    document.getElementById('cpuBar').style.width = `${data.cpu}%`;
+                    document.getElementById('memValue').textContent = `${data.memory}%`;
+                    document.getElementById('memBar').style.width = `${data.memory}%`;
+                    document.getElementById('diskValue').textContent = `${data.disk}%`;
+                    document.getElementById('diskBar').style.width = `${data.disk}%`;
+                    document.getElementById('status').textContent = 'ONLINE';
+                })
+                .catch(e => {
+                    document.getElementById('status').textContent = 'OFFLINE';
+                });
+        }
+        
+        setInterval(updateStats, 2000);
+        updateStats();
+        
+        function sendMessage() {
+            const input = document.getElementById('input');
+            const msg = input.value.trim();
+            if (!msg) return;
+            
+            addMessage('user', msg);
+            input.value = '';
+            cmdCount++;
+            if (msg.toLowerCase().includes('verify') || msg.toLowerCase().includes('check')) {
+                factCount++;
+                document.getElementById('factCount').textContent = factCount;
+            }
+            document.getElementById('cmdCount').textContent = cmdCount;
+            
+            fetch(`${API_URL}/api/query`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query: msg })
+            })
+            .then(r => r.json())
+            .then(data => {
+                addMessage('ai', data.response);
+            })
+            .catch(e => {
+                addMessage('ai', '❌ Backend connection error - ensure backend is running on port 8080');
+            });
+        }
+        
+        function addMessage(type, text) {
+            const msg = document.createElement('div');
+            msg.className = `message ${type}`;
+            msg.innerHTML = `<strong>${type === 'user' ? 'You' : 'AuraLens'}:</strong> ${text}`;
+            document.getElementById('messages').appendChild(msg);
+            document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
+        }
+        
+        function handleKeypress(e) {
+            if (e.key === 'Enter') sendMessage();
+        }
+        
+        console.log('%c✓ AuraLens Advanced v2.0 Loaded', 'background: #00ff88; color: #000; font-weight: bold; font-size: 14px;');
+        console.log('%c🚀 Enterprise AI System Ready', 'background: #0099ff; color: #fff; font-weight: bold;');
+    </script>
+</body>
+</html>
